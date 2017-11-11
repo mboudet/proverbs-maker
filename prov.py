@@ -13,6 +13,15 @@ from polyglot.text import Text, Word
 adress_dict={"fr":"https://fr.wiktionary.org/w/api.php?titles=Annexe:Liste_de_proverbes_fran%C3%A7ais"
 ,"en":"https://en.wiktionary.org/w/api.php?titles=Appendix:English_proverbs"}
 
+def clean_string(mystring):
+    mystring = re.sub('\(.*\)','', mystring.rstrip(".")).encode('utf-8')
+    if mystring[0:2] == "à" :
+        return "À" + mystring[2:]
+    elif mystring[0:2] == "ç" :
+        return "Ç" + mystring[2:]
+    else:
+        return mystring[0].upper() + mystring[1:]
+
 def get_list(lang="fr"):
     if not lang == "fr" and not lang == "en":
         print("Only support fr & en languages")
@@ -36,10 +45,10 @@ def parse_list(lang="fr"):
             elm.extract()
         references.extract()
         for pro in parsed_html.find_all('li'):
-            proverb_list.append(pro.get_text().rstrip("."))
+            proverb_list.append(clean_string(pro.get_text()))
     elif lang == "en":
         for pro in parsed_html.find_all('dd'):
-            proverb_list.append(pro.get_text().rstrip("."))
+            proverb_list.append(clean_string(pro.get_text()))
     return proverb_list
 
 def build_proverbs_file(lang):
